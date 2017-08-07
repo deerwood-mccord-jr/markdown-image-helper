@@ -24,21 +24,23 @@ module.exports = MarkdownImgHelper =
 				imgbuffer = img.toPng()
 
 				thefile = new File(editor.getPath())
-				assetsDirPath = thefile.getParent().getPath()+"/assets"
+				baseFileName = thefile.getBaseName().replace(/\.\w+$/, '').replace(/\s+/g,'')
+				assetsDirName = "#{baseFileName}_assets"
+				assetsDirPath = thefile.getParent().getPath()+"/#{assetsDirName}"
 
 
 				crypto = require "crypto"
 				md5 = crypto.createHash 'md5'
 				md5.update(imgbuffer)
 
-				filename = "#{thefile.getBaseName().replace(/\.\w+$/, '').replace(/\s+/g,'')}-#{md5.digest('hex').slice(0,5)}.png"
+				filename = "#{baseFileName}-#{md5.digest('hex').slice(0,5)}.png"
 
 				@createDirectory assetsDirPath, ()=>
 					@writePng assetsDirPath+'/', filename, imgbuffer, ()=>
 						# ascClip = "assets/#{filename}"
 						# clipboard.writeText(ascClip)
 
-						@insertUrl "assets/#{filename}",editor
+						@insertUrl "![](#{assetsDirName}/#{filename})",editor
 
 				return false
 
